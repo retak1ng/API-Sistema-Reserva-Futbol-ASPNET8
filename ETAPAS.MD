@@ -11,3 +11,53 @@ los cimientos para que el proyecto escale.
 
 La diferencia entre un proyecto de portfolio amateur y uno
 profesional empieza en el día 1, antes de escribir lógica.
+
+-----------------------------------------------------------------------
+
+🧱 Etapa 2: Construí el Domain Layer de mi API de Reservas
+
+Sin frameworks. Sin NuGets. C# puro.
+
+Decisiones técnicas que tomé:
+
+→ Factory Methods en lugar de constructores públicos
+  Las entidades solo pueden crearse en estado válido.
+  Es imposible tener un User sin email o una Availability
+  con fecha pasada.
+
+→ Result Pattern en lugar de excepciones
+  "Turno ya reservado" no es una excepción — es un flujo
+  esperado. Lo manejé con Result<T> para hacerlo explícito.
+
+→ Errores de dominio tipados
+  DomainErrors.Availability.AlreadyBooked en lugar de
+  throw new Exception("ya reservado"). Buscable, testeable,
+  sin magic strings.
+
+El Domain no sabe que existe ASP.NET ni Firebase.
+Eso es Clean Architecture en la práctica.
+
+-----------------------------------------------------------------
+
+⚙️ Etapa 3: Application Layer — donde viven los casos de uso
+
+Construí el corazón de la lógica de mi API de Reservas:
+
+→ CQRS con MediatR
+  Separé operaciones de escritura (Commands) de lectura
+  (Queries). Cada caso de uso es una clase independiente.
+
+→ Pipeline Behaviors
+  Logging y Validación se ejecutan automáticamente antes
+  de cada Handler. Sin repetir código. Patrón Decorator.
+
+→ Seguridad en Login
+  El mismo error para "usuario no existe" y "contraseña
+  incorrecta". Nunca revelar cuál falló.
+
+→ Contratos sin implementación
+  La Application define interfaces (IUserRepository,
+  IJwtTokenGenerator). No sabe nada de Firebase ni JWT.
+
+La Infrastructure implementará esos contratos en la
+próxima etapa.
