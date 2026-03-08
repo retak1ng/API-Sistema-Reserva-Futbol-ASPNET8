@@ -61,3 +61,29 @@ Construí el corazón de la lógica de mi API de Reservas:
 
 La Infrastructure implementará esos contratos en la
 próxima etapa.
+
+--------------------------------------------------------------------
+
+🔧 Etapa 4: Infrastructure Layer — Firebase + JWT implementados
+
+Hoy conecté el sistema al mundo real sin tocar el dominio:
+
+→ Firebase Firestore como base de datos NoSQL
+  Mapeo manual Firestore ↔ Entidades de dominio.
+  Sin ORM — el dominio permanece completamente limpio.
+
+→ JWT con claims tipados
+  El token lleva Id, Email, Name y Role del usuario.
+  Firmado con HMAC-SHA256.
+
+→ Settings fuertemente tipados
+  JwtSettings y FirebaseSettings mapeados desde
+  appsettings.json. Sin magic strings en el código.
+
+→ Lifetimes correctos en DI
+  FirebaseContext → Singleton (una sola conexión)
+  Repositorios → Scoped (por request HTTP)
+  JwtTokenGenerator → Singleton (stateless)
+
+La Application no sabe nada de esto.
+Solo conoce interfaces. Eso es desacoplamiento real.
