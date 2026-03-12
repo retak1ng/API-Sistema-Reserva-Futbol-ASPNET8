@@ -87,3 +87,58 @@ Hoy conecté el sistema al mundo real sin tocar el dominio:
 
 La Application no sabe nada de esto.
 Solo conoce interfaces. Eso es desacoplamiento real.
+
+--------------------------------------------------------------------
+
+🌐 Etapa 5: API Layer — Controllers, Middleware y Swagger listos
+
+El sistema ya recibe requests HTTP reales.
+Lo más importante que implementé:
+
+→ Controllers de 10 líneas
+  Reciben request → disparan Command → devuelven Result.
+  Sin lógica de negocio. Sin if/else de validación.
+
+→ Global Exception Middleware
+  Un único lugar que captura todo.
+  FluentValidation → 400 estructurado.
+  Excepciones no esperadas → 500 con logging.
+
+→ Swagger con JWT integrado
+  Podés autenticarte directamente desde la UI.
+  Documentación autogenerada con XML comments.
+
+→ Program.cs como producción real
+  Serilog configurado, CORS, orden correcto
+  del middleware pipeline (Authentication antes
+  que Authorization, siempre).
+
+Ya puedo hacer Register → Login → Reservar una cancha
+end to end. 
+
+-----------------------------------------------------------------
+
+🧪 Etapa 6: Testing — la parte que separa portfolios reales de los demo
+
+14 tests escritos. Lo que aprendí en el proceso:
+
+→ Tests de Dominio sin mocks
+  Las entidades son C# puro. No necesitan mocks.
+  Book_WhenAlreadyBooked_ReturnsFailure se entiende
+  solo con leerlo.
+
+→ Tests de Handlers con Moq
+  Mockeé los repositorios para aislar la lógica.
+  Verifiqué no solo el resultado sino también
+  que los métodos correctos fueron llamados
+  (Times.Once / Times.Never).
+
+→ El test más importante del sistema:
+  Handle_WithAlreadyBookedSlot_ReturnsFailure
+  Verifica que si dos usuarios intentan reservar
+  el mismo slot, el segundo recibe error Y que
+  la reserva nunca se guardó en la base de datos.
+
+→ Naming convention: 
+  Metodo_Condicion_ResultadoEsperado
+  Los tests son documentación ejecutable.
